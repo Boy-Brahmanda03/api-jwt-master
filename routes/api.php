@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
-
+use App\Http\Controllers\HospitalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,4 +28,6 @@ Route::group(['middleware' => ['jwt.verify']], function () {
     /**
       * Silahkan tambahkan route anda disini ...
     */
+    Route::get('hospital', [HospitalController::class, 'index']);
+    Route::post('hospital', [HospitalController::class, 'store']);
 });

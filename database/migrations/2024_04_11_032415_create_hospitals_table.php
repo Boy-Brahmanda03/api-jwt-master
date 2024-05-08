@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('lng');
             $table->string('address');
             $table->char('type')->nullable();
-            $table->large('picture')->nullable();
+            $table->string('picture')->nullable();
             $table->timestamps();
         });
     }

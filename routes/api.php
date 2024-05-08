@@ -29,5 +29,8 @@ Route::group(['middleware' => ['jwt.verify']], function () {
       * Silahkan tambahkan route anda disini ...
     */
     Route::get('hospital', [HospitalController::class, 'index']);
-    Route::post('hospital', [HospitalController::class, 'store']);
+    Route::post('hospital', [HospitalController::class, 'create']);
+    Route::get('hospital/{id}', [HospitalController::class, 'show']);
+    Route::patch('hospital/{id}', [HospitalController::class, 'update']);
+    Route::delete('hospital/{id}', [HospitalController::class, 'destroy']);
 });

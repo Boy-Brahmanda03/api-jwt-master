@@ -18,9 +18,10 @@ return new class extends Migration
             $table->string('lng');
             $table->string('address');
             $table->char('type')->nullable();
-            $table->string('picture')->nullable();
             $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE hospitals ADD picture MEDIUMBLOB");
     }
 
     /**

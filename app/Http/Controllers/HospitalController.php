@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Hospital;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class HospitalController extends Controller
 {
@@ -16,14 +17,18 @@ class HospitalController extends Controller
         $hospitals = Hospital::all();
         $hospitalsArray = [];
 
+
         foreach ($hospitals as $hospital) {
+            $pic = $hospital->picture;
+            $base64Pic = base64_encode($pic);
             $hospitalsArray[] = [
                 'id' => $hospital->id,
                 'name' => $hospital->h_name,
                 'lat' => $hospital->lat,
                 'lng' => $hospital->lng,
                 'alamat' => $hospital->address,
-                'gambar' => $hospital->picture
+                'gambar' => $base64Pic,
+                'tipe' => $hospital->type
             ];
         }
 
@@ -39,13 +44,14 @@ class HospitalController extends Controller
      */
     public function create(Request $request)
     {
-        $data = $request->only('h_name', 'lat', 'lng', 'address', 'picture');
+        $data = $request->only('h_name', 'lat', 'lng', 'address', 'picture', 'type');
         $validator = Validator::make($data, [
             'h_name' => 'required|string',
             'lat' => 'required|string',
             'lng' => 'required|string',
             'address' => 'required|string',
-            'picture' => 'image|file|max:2000'
+            'picture' => 'image|file|max:2000',
+            'type' => 'string',
         ]);
 
         if ($validator->fails()){
@@ -55,18 +61,20 @@ class HospitalController extends Controller
             ]);
         }
 
-        $hospital = Hospital::create([
-            'h_name' => $request->h_name,
-            'lat' => $request->lat,
-            'lng' => $request->lng,
-            'address' => $request->address,
-            'picture' => $request->file('picture')->store('images')
-        ]);
+        $hospital = new Hospital();
+        $hospital->h_name = $request->h_name;
+        $hospital->lat = $request->lat;
+        $hospital->lng = $request->lng;
+        $hospital->address = $request->address;
+        $hospital->type = $request->type;
+        // Mengambil data gambar dan menyimpannya ke dalam kolom 'picture' sebagai BLOB
+        $hospital->picture = file_get_contents($request->file('picture')->getRealPath());
+        
+        $hospital->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Hospital created successfully',
-            'data' => $hospital
+            'message' => 'Hospital created successfully'
         ], 201);
     }
 
@@ -83,6 +91,8 @@ class HospitalController extends Controller
     public function show($id)
     {
         $hospital = Hospital::findOrFail($id);
+        $pic = $hospital->picture;
+        $base64Pic = base64_encode($pic);
         return response()->json([
             'success' => true,
             'data' => ([
@@ -91,7 +101,7 @@ class HospitalController extends Controller
                 'lat'=> $hospital['lat'],
                 'lng'=> $hospital['lng'],
                 'address'=> $hospital['address'],
-                'picture'=> $hospital['picture'],
+                'picture'=> $base64Pic,
             ])
         ], 200);
     }
@@ -111,7 +121,8 @@ class HospitalController extends Controller
     {
         $hospital = Hospital::findOrFail($id);
         $hospital->update($request->all());
-
+        $pic = $hospital->picture;
+        $base64Pic = base64_encode($pic);
         return response()->json([
             'success' => true,
             'message' => 'Hospital updated successfully',
@@ -121,6 +132,8 @@ class HospitalController extends Controller
                 'lat' => $hospital['lat'],
                 'lng' => $hospital['lng'],
                 'address' => $hospital['address'],
+                'type' => $hospital['type'],
+                'picture'=> $base64Pic,
             ])
         ], 200);
 
@@ -132,12 +145,12 @@ class HospitalController extends Controller
     public function destroy($id)
     {
         $hospital = Hospital::findOrFail($id);
+        $hId = $hospital->id;
         $hospital->delete();
         return response()->json(([
             'success' => true,
-            'message' => 'Hospital updated successfully',
+            'message' => "Hospital {$hId} deleted successfully",
             'data'=> ([
-                'id' => $hospital['id'],
                 'name' => $hospital['h_name'],
                 'lat' => $hospital['lat'],
                 'lng' => $hospital['lng'],

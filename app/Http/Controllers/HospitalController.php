@@ -101,6 +101,7 @@ class HospitalController extends Controller
                 'lat'=> $hospital['lat'],
                 'lng'=> $hospital['lng'],
                 'address'=> $hospital['address'],
+                'type'=> $hospital['type'],
                 'picture'=> $base64Pic,
             ])
         ], 200);
@@ -118,25 +119,27 @@ class HospitalController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
+    
     {
-        $hospital = Hospital::findOrFail($id);
-        $hospital->update($request->all());
-        $pic = $hospital->picture;
-        $base64Pic = base64_encode($pic);
+        $hospital = Hospital::find($id);
+        $hospital->h_name = $request->h_name;
+        $hospital->address = $request->address;
+        $hospital->type = $request->type;
+         // Mengambil data gambar dan menyimpannya ke dalam kolom 'picture' sebagai BLOB
+         $hospital->picture = file_get_contents($request->file('picture')->getRealPath());
+        $hospital->save();
+
+        // Return response
         return response()->json([
             'success' => true,
             'message' => 'Hospital updated successfully',
-            'data'=> ([
+            'data' => [
                 'id' => $hospital['id'],
-                'name' => $hospital['h_name'],
-                'lat' => $hospital['lat'],
-                'lng' => $hospital['lng'],
-                'address' => $hospital['address'],
-                'type' => $hospital['type'],
-                'picture'=> $base64Pic,
-            ])
+                'name'=> $hospital['h_name'],
+                'address'=> $hospital['address'],
+                'type'=> $hospital['type'],
+            ]
         ], 200);
-
     }
 
     /**

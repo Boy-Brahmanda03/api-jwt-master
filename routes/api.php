@@ -24,7 +24,7 @@ Route::post('login', [ApiController::class, 'authenticate']);
 Route::post('register', [ApiController::class, 'register']);
 Route::get('hospital', [HospitalController::class, 'index']);
 Route::post('hospital', [HospitalController::class, 'create']);
-Route::patch('hospital/{id}', [HospitalController::class, 'update']);
+Route::post('hospital/{id}', [HospitalController::class, 'update']);
 Route::delete('hospital/{id}', [HospitalController::class, 'destroy']);
 Route::get('hospital/{id}', [HospitalController::class, 'show']);
 Route::group(['middleware' => ['jwt.verify']], function () {

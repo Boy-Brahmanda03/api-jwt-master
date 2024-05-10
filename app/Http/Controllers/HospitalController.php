@@ -126,7 +126,7 @@ class HospitalController extends Controller
         $hospital->address = $request->address;
         $hospital->type = $request->type;
          // Mengambil data gambar dan menyimpannya ke dalam kolom 'picture' sebagai BLOB
-         $hospital->picture = $request->file('picture');
+         $hospital->picture = file_get_contents($request->file('picture')->getRealPath());
         $hospital->save();
 
         // Return response

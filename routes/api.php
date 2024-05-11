@@ -22,16 +22,15 @@ use App\Http\Controllers\HospitalController;
 
 Route::post('login', [ApiController::class, 'authenticate']);
 Route::post('register', [ApiController::class, 'register']);
-Route::get('hospital', [HospitalController::class, 'index']);
-Route::post('hospital', [HospitalController::class, 'create']);
-Route::post('hospital/{id}', [HospitalController::class, 'update']);
-Route::delete('hospital/{id}', [HospitalController::class, 'destroy']);
-Route::get('hospital/{id}', [HospitalController::class, 'show']);
 Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('logout', [ApiController::class, 'logout']);
     Route::get('getuser', [ApiController::class, 'get_user']);
     /**
       * Silahkan tambahkan route anda disini ...
     */
-   
+    Route::get('hospital', [HospitalController::class, 'index']);
+    Route::post('hospital', [HospitalController::class, 'create']);
+    Route::post('hospital/{id}', [HospitalController::class, 'update']);
+    Route::delete('hospital/{id}', [HospitalController::class, 'destroy']);
+    Route::get('hospital/{id}', [HospitalController::class, 'show']);
 });
